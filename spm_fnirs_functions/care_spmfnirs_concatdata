@@ -32,7 +32,7 @@ function care_spmfnirs_concatdata( cfg )
 %
 % See also CARE_NIRX2NIRS
 
-% Copyright (C) 2017, Daniel Matthes, MPI CBS
+% Copyright (C) 2017-2018, Daniel Matthes, MPI CBS, Trinh Nguyen, Univie
 
 % -------------------------------------------------------------------------
 % Get config options
