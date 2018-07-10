@@ -107,9 +107,17 @@ function data_out = execGLM(evtMark, s, data_in)
     % beta estimates for a generalized linear regression of the responses 
     % in data_in.hbo(:, channel) on the predictors in the sMatrix
     if ~isnan(data_in.hbo(1, channel))                                      % check if channel was not rejected during preprocessing
-      beta(channel,:) = glmfit(s, data_in.hbo(:, channel));
-    else
+      [beta(channel,:),b,c] = glmfit(s, data_in.hbo(:, channel));                 
+      covb = c.covb(2:end, 2:end);                                          % find covariance matrix of betas
+      contrast_collab = [1 0 -1];                                                  % define contrast
+      V1 = contrast_collab  * covb * contrast_collab.';                                    % variance of contrast
+      T_contrast(channel, 1) = (beta(channel, 2:end) * contrast_collab') / sqrt(V1) * sqrt(length(s));   % T-values of contrast
+      contrast_indiv = [0 1 -1];                                                  % define contrast
+      V2 = contrast_indiv  * covb * contrast_indiv.';
+      T_contrast(channel, 2) = (beta(channel, 2:end) * contrast_indiv') / sqrt(V2) * sqrt(length(s));   % T-values of contrast
+     else
       beta(channel,:) = NaN;
+      T_contrast(channel,:)=NaN;
     end
   end
   
@@ -120,6 +128,7 @@ function data_out = execGLM(evtMark, s, data_in)
   data_out.time         = (1:1:size(data_in.hbo, 1)) / data_in.fs;
   data_out.fsample      = data_in.fs;
   data_out.channel      = 1:1:size(data_in.hbo, 2);
-  data_out.beta         = beta(:, 2:end);                                    % for the existing conditions only the columns 2:end are relevant  
+  data_out.beta         = beta(:, 2:end);                                   % for the existing conditions only the columns 2:end are relevant 
+  data_out.T_contrast   = T_contrast;
 end
 
