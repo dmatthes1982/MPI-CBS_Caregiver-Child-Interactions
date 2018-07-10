@@ -5,7 +5,7 @@ end
 
 if ~exist('srcPath', 'var')
   if strcmp(prefix, 'CARE')
-    srcPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_rawData/';           % source path to raw data
+    srcPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_rawData/';           % source path to raw data
   else
     srcPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_rawData/';
   end
@@ -13,7 +13,7 @@ end
 
 if ~exist('desPath', 'var')
   if strcmp(prefix, 'CARE')
-    desPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_processedData/';     % destination path to preprocessed data
+    desPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_processed/';     % destination path to preprocessed data
   else
     desPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_processedData/';
   end
@@ -22,14 +22,14 @@ end
 if ~exist('sessionStr', 'var')
   cfg           = []; 
   cfg.desFolder = desPath;
-  cfg.subFolder = '01_raw_nirs/';
-  cfg.filename  = [prefix, '_d02b_01_raw_nirs'];
+  cfg.subFolder = '01_spm_fnirs/';
+  cfg.filename  = [prefix, '_d02b_01_spm_fnirs'];
   sessionStr    = sprintf('%03d', CARE_getSessionNum( cfg ));               % calculate current session number
 end
 
 if ~exist('numOfPart', 'var')                                               % estimate number of participants in raw data folder
-  sourceList    = dir([strcat(desPath, '01_raw_nirs/'), ...
-                       strcat('*b_01_raw_nirs_', sessionStr, '.nirs')]);
+  sourceList    = dir([strcat(desPath, '01_spm_fnirs/'), ...
+                       strcat('*b_01_spm_fnirs_', sessionStr, '.mat')]);
   sourceList    = struct2cell(sourceList);
   sourceList    = sourceList(1,:);
   numOfSources  = length(sourceList);
@@ -37,8 +37,8 @@ if ~exist('numOfPart', 'var')                                               % es
 
   for i=1:1:numOfSources
     numOfPart(i)  = sscanf(sourceList{i}, ...
-                    strcat(prefix, '_d%d_01_raw_nirs_', sessionStr, ...
-                    '.nirs'));
+                    strcat(prefix, '_d%d_01_spm_fnirs_', sessionStr, ...
+                    '.mat'));
   end
 end
 
@@ -48,23 +48,23 @@ end
 cprintf([0,0.6,0], '<strong>[2] - Data preprocessing</strong>\n');
 fprintf('\n');
 
-selection = false;
-while selection == false
-  cprintf([0,0.6,0], 'Do you want to apply the data quality check of Xu Cui?\n');
-  x = input('Select [y/n]: ','s');
-  if strcmp('y', x)
-    selection = true;
-    XuCui = x;
-    XuCuiCfg = 'yes';
-  elseif strcmp('n', x)
-    selection = true;
-    XuCui = x;
-    XuCuiCfg = 'no';
-  else
-    selection = false;
-  end
-end
-fprintf('\n');
+%selection = false;
+%while selection == false
+%  cprintf([0,0.6,0], 'Do you want to apply the data quality check of Xu Cui?\n');
+%  x = input('Select [y/n]: ','s');
+%  if strcmp('y', x)
+%    selection = true;
+%    XuCui = x;
+%    XuCuiCfg = 'yes';
+%  elseif strcmp('n', x)
+%    selection = true;
+%    XuCui = x;
+%    XuCuiCfg = 'no';
+%  else
+%    selection = false;
+%  end
+%end
+%fprintf('\n');
 
 selection = false;
 while selection == false
@@ -97,9 +97,9 @@ end
 
 T = readtable(file_path);                                                   % update settings table
 warning off;
-T.dyad(numOfPart, 1)     = numOfPart;
-T.XuCuiQC(numOfPart, 1)  = { XuCui };
-T.pulseQC(numOfPart, 1)  = { pulse };
+T.dyad(numOfPart,1)     = numOfPart;
+%T.XuCuiQC(numOfPart,1)  = { XuCui };
+T.pulseQC(numOfPart,1)  = { pulse };
 warning on;
 delete(file_path);
 writetable(T, file_path);
@@ -119,11 +119,11 @@ for i = numOfPart
   
   % load raw data of subject 1
   cfg             = [];
-  cfg.srcFolder   = strcat(desPath, '01_raw_nirs/');
-  cfg.filename    = sprintf([prefix, '_d%02da_01_raw_nirs'], i);
+  cfg.srcFolder   = strcat(desPath, '01_spm_fnirs/');
+  cfg.filename    = sprintf([prefix, '_d%02da_01_spm_fnirs'], i);
   cfg.sessionStr  = sessionStr;
   
-  fprintf('Load raw nirs data of subject 1...\n');
+  fprintf('Load raw spm fnirs data of subject 1...\n');
   CARE_loadData( cfg );
   
   if ~isequal(length(eventMarkers), size(s, 2))
@@ -131,21 +131,22 @@ for i = numOfPart
   end
   
   data_raw.sub1.SD            = SD;
-  data_raw.sub1.d             = d;
+  data_raw.sub1.SD.sub        = 1;
+  data_raw.sub1.y             = y;
   data_raw.sub1.s             = s;
   data_raw.sub1.aux           = aux;
   data_raw.sub1.t             = t;
   data_raw.sub1.eventMarkers  = eventMarkers;
   
-  clear SD d s aux t
+  clear SD y s aux t
   
   % load raw data of subject 2
   cfg             = [];
-  cfg.srcFolder   = strcat(desPath, '01_raw_nirs/');
-  cfg.filename    = sprintf([prefix, '_d%02db_01_raw_nirs'], i);
+  cfg.srcFolder   = strcat(desPath, '01_spm_fnirs/');
+  cfg.filename    = sprintf([prefix, '_d%02db_01_spm_fnirs'], i);
   cfg.sessionStr  = sessionStr;
   
-  fprintf('Load raw nirs data of subject 2...\n');
+  fprintf('Load spm fnirs data of subject 2...\n');
   CARE_loadData( cfg );
   
   if ~isequal(length(eventMarkers), size(s, 2))
@@ -153,30 +154,31 @@ for i = numOfPart
   end
   
   data_raw.sub2.SD            = SD;
-  data_raw.sub2.d             = d;
+  data_raw.sub2.SD.sub        = 2;
+  data_raw.sub2.y             = y;
   data_raw.sub2.s             = s;
   data_raw.sub2.aux           = aux;
   data_raw.sub2.t             = t;
   data_raw.sub2.eventMarkers  = eventMarkers;
   
-  clear SD d s aux t eventMarkers
+  clear SD y s aux t eventMarkers
   
   % preprocess raw data of both subjects
   cfg = [];
-  cfg.XuQualityCheck    = XuCuiCfg;
+  %cfg.XuQualityCheck    = XuCuiCfg;
   cfg.pulseQualityCheck = pulseCfg;
 
-  data_preproc = CARE_preprocessing(cfg, data_raw);
+  data_preproc = care_spmfnirs_preproc(cfg, data_raw);
   
   % export results of quality checks into accociated spreadsheets
-  if strcmp(XuCuiCfg, 'yes')
-    cfg           = [];
-    cfg.desFolder = [desPath '00_settings/'];
-    cfg.dyad = i;
-    cfg.type = 'XuCuiQC';
-    cfg.sessionStr = sessionStr;
-    CARE_writeTbl(cfg, data_preproc);
-  end
+  %if strcmp(XuCuiCfg, 'yes')
+  %  cfg           = [];
+  %  cfg.desFolder = [desPath '00_settings/'];
+  %  cfg.dyad = i;
+  %  cfg.type = 'XuCuiQC';
+  %  cfg.sessionStr = sessionStr;
+  %  CARE_writeTbl(cfg, data_preproc);
+  %end
   if strcmp(pulseCfg, 'yes')
     cfg           = [];
     cfg.desFolder = [desPath '00_settings/'];
@@ -225,4 +227,4 @@ for i = numOfPart
 end
 
 %% clear workspace
-clear cfg i file_path XuCui XuCuiCfg pulse pulseCfg T
+clear cfg i file_path pulse pulseCfg T

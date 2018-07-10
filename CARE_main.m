@@ -30,9 +30,9 @@ while selection == false
 end
 
 if strcmp(prefix, 'CARE')
-  srcPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_rawData/';             % location of raw data
-  desPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_processedData/';       % memory space for processed data
-  gsePath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_generalSettings/';     % path to CARE.SD
+  srcPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_rawData/';             % location of raw data
+  desPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_processed/';       % memory space for processed data
+  gsePath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_processed/00_settings/';     % path to CARE.SD
 else
   srcPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_rawData/';            % location of raw data
   desPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_processedData/';      % memory space for processed data
@@ -73,8 +73,8 @@ end
 if ~exist(strcat(desPath, '00_settings'), 'dir')
   mkdir(strcat(desPath, '00_settings'));
 end
-if ~exist(strcat(desPath, '01_raw_nirs'), 'dir')
-  mkdir(strcat(desPath, '01_raw_nirs'));
+if ~exist(strcat(desPath, '01_spm_fnirs'), 'dir')
+  mkdir(strcat(desPath, '01_spm_fnirs'));
 end
 if ~exist(strcat(desPath, '02a_preproc'), 'dir')
   mkdir(strcat(desPath, '02a_preproc'));
@@ -111,9 +111,9 @@ clear sessionStr numOfPart part newPaths
 % -------------------------------------------------------------------------
 selection = false;
 
-tmpPath = strcat(desPath, '01_raw_nirs/');
+tmpPath = strcat(desPath, '01_spm_fnirs/');
 
-sessionList    = dir([tmpPath, prefix, '_d*a_01_raw_nirs_*.nirs']);
+sessionList    = dir([tmpPath, prefix, '_d*a_01_spm_fnirs_*.mat']);
 sessionList    = struct2cell(sessionList);
 sessionList    = sessionList(1,:);
 numOfSessions  = length(sessionList);
@@ -122,9 +122,9 @@ sessionNum     = zeros(1, numOfSessions);
 sessionListCopy = sessionList;
 
 for i=1:1:numOfSessions
-  sessionListCopy{i} = strsplit(sessionList{i}, '01_raw_nirs_');
+  sessionListCopy{i} = strsplit(sessionList{i}, '01_spm_fnirs_');
   sessionListCopy{i} = sessionListCopy{i}{end};
-  sessionNum(i) = sscanf(sessionListCopy{i}, '%d.nirs');
+  sessionNum(i) = sscanf(sessionListCopy{i}, '%d.mat');
 end
 
 sessionNum = unique(sessionNum);
@@ -133,7 +133,7 @@ y = sprintf('%d ', sessionNum);
 userList = cell(1, length(sessionNum));
 
 for i = sessionNum
-  match = find(strcmp(sessionListCopy, sprintf('%03d.nirs', i)), 1, 'first');
+  match = find(strcmp(sessionListCopy, sprintf('%03d.mat', i)), 1, 'first');
   filePath = [tmpPath, sessionList{match}];
   [~, cmdout] = system(['ls -l ' filePath '']);
   attrib = strsplit(cmdout);
@@ -299,9 +299,9 @@ switch part
     fileNamePost = strcat(tmpPath, prefix, '_d*b_01_raw_nirs_', ...
                           sessionStr, '.nirs');
   case 2
-    tmpPath = strcat(desPath, '01_raw_nirs/');
-    fileNamePre = strcat(tmpPath, prefix, '_d*b_01_raw_nirs_', ...
-                          sessionStr, '.nirs');
+    tmpPath = strcat(desPath, '01_spm_fnirs/');
+    fileNamePre = strcat(tmpPath, prefix, '_d*b_01_spm_fnirs_', ...
+                          sessionStr, '.mat');
     tmpPath = strcat(desPath, '02b_trial/');
     fileNamePost = strcat(tmpPath, prefix, '_d*_02b_trial_', ...
                           sessionStr, '.mat');

@@ -5,7 +5,7 @@ end
 
 if ~exist('srcPath', 'var')
   if strcmp(prefix, 'CARE')
-    srcPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_rawData/';           % source path to raw data
+    srcPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_rawData/';           % source path to raw data
   else
     srcPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_rawData/';
   end
@@ -13,7 +13,7 @@ end
 
 if ~exist('desPath', 'var')
   if strcmp(prefix, 'CARE')
-    desPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_processedData/';     % destination path to preprocessed data
+    desPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_processed/';     % destination path to preprocessed data
   else
     desPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_processedData/';
   end

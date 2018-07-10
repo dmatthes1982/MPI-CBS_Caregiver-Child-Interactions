@@ -5,7 +5,7 @@ end
 
 if ~exist('srcPath', 'var')
   if strcmp(prefix, 'CARE')
-    srcPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_rawData/';           % source path to raw data
+    srcPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_rawData/';           % source path to raw data
   else
     srcPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_rawData/';
   end
@@ -13,7 +13,7 @@ end
 
 if ~exist('desPath', 'var')
   if strcmp(prefix, 'CARE')
-    desPath = '/data/pt_01867/fnirsData/DualfNIRS_CARE_processedData/';     % destination path to preprocessed data
+    desPath = '/Volumes/INTENSO/CARE/DualfNIRS_CARE_processed/';     % destination path to preprocessed data
   else
     desPath = '/data/pt_01958/fnirsData/DualfNIRS_DCARE_processedData/';
   end
@@ -54,11 +54,11 @@ fprintf('\n');
 
 selection = false;
 while selection == false
-  cprintf([0,0.6,0], 'Do you want to use the default period of interest ([23 100]) for the coherence estimation?\n');
+  cprintf([0,0.6,0], 'Do you want to use the default period of interest ([10 50]) for the coherence estimation?\n');
   x = input('Select [y/n]: ','s');
   if strcmp('y', x)
     selection = true;
-    poi = [23 100];                                                         % period of interest in seconds, master thesis settings: [30 136]
+    poi = [10 50];                                                         % period of interest in seconds, master thesis settings: [30 136]
   elseif strcmp('n', x)
     selection = true;
     poi = [];
@@ -123,8 +123,8 @@ end
 
 T = readtable(file_path);                                                   % update settings table
 warning off;
-T.CohPOI(numOfPart, 1)   = {vec2str(poi, [], [], 1)};
-T.ConsCOI(numOfPart, 1)  = { x };
+T.CohPOI(numOfPart)   = {vec2str(poi, [], [], 1)};
+T.ConsCOI(numOfPart)  = { x };
 warning on;
 delete(file_path);
 writetable(T, file_path);
@@ -150,6 +150,7 @@ for i = numOfPart
   cfg.considerCOI  = considerCOI;
   
   data_wtc = CARE_wtc(cfg, data_preproc);
+
   
   % save wavelet coherence data
   cfg             = [];
@@ -167,6 +168,44 @@ for i = numOfPart
   clear data_wtc data_preproc 
   
 end
+
+% wavelet transform coherence for flipped versions
+%for i = numOfPart
+%  fprintf('<strong>Dyad %d</strong>\n', i);
+  
+%  cfg             = [];
+%  cfg.srcFolder   = strcat(desPath, '02a_preproc/');
+%  cfg.filename    = sprintf([prefix, '_d%02d_02a_preproc'], i);
+%  cfg.sessionStr  = sessionStr;
+  
+  % load continuous preprocessed data
+%  fprintf('Load preprocessed data...\n');
+%  CARE_loadData( cfg );
+  
+  % estimate wavelet coherence
+%  cfg = [];
+%  cfg.prefix       = prefix;
+%  cfg.poi          = poi; 
+%  cfg.considerCOI  = considerCOI;
+  
+%  data_wtc_flipped = CARE_wtc_flipped(cfg, data_preproc);
+  
+  % save wavelet coherence data
+%  cfg             = [];
+%  cfg.desFolder   = strcat(desPath, '05c_wtc_flipped/');
+%  cfg.filename    = sprintf([prefix, '_d%02d_05c_wtc_flipped'], i);
+%  cfg.sessionStr  = sessionStr;
+  
+%  file_path = strcat(cfg.desFolder, cfg.filename, '_', cfg.sessionStr, ...
+%                     '.mat');
+
+%  fprintf('The wavelet transform coherence of flipped data of dyad %d will be saved in:\n', i); 
+%  fprintf('%s ...\n', file_path);
+%  CARE_saveData(cfg, 'data_wtc_flipped', data_wtc_flipped);
+%  fprintf('Data stored!\n\n');
+  clear data_wtc data_preproc 
+  
+%end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % magnitude-squared coherence
