@@ -58,14 +58,21 @@ numOfDyads = length(listOfDyads);
 caregiverBeta = zeros(16, 3, numOfDyads);
 childBeta = zeros(16, 3, numOfDyads);
 
+caregiverT = zeros(16,2,numOfDyads);
+childT = zeros(16,2,numOfDyads);
+
+
 for i=1:1:length(listOfDyads)
   filename = sprintf([prefix, '_d%02d_03_glm_%03d.mat'], listOfDyads(i), ...
                     session);
   file = strcat(path, filename);
   fprintf('Load %s ...\n', filename);
   load(file, 'data_glm');
-  caregiverBeta(:,:,i) = data_glm.sub1.beta;
-  childBeta(:,:,i) = data_glm.sub2.beta;
+  caregiverBeta(:,:,i) = data_glm.sub2.beta;
+  childBeta(:,:,i) = data_glm.sub1.beta;
+  caregiverT(:,:,i) = data_glm.sub2.T_contrast;
+  childT(:,:,i) = data_glm.sub1.T_contrast;
+
   if i == 1
     eventMarkers = data_glm.sub1.eventMarkers;
     channel = data_glm.sub1.channel;
@@ -78,8 +85,11 @@ fprintf('\n');
 % Estimate averaged beta values
 % -------------------------------------------------------------------------
 fprintf('<strong>Averaging of beta values over caregivers and over childs...</strong>\n\n');
-data.sub1.beta = nanmean(caregiverBeta, 3);
-data.sub2.beta = nanmean(childBeta, 3);
+data.sub2.beta = nanmean(caregiverBeta, 3);
+data.sub1.beta = nanmean(childBeta, 3);
+data.sub2.T = nanmean(caregiverT, 2);
+data.sub1.T = nanmean(childT, 2);
+
 
 data.sub1.eventMarkers = eventMarkers;
 data.sub1.channel = channel;
